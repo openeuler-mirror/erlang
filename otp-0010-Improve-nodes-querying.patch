@@ -1,0 +1,134 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Wed, 24 Oct 2018 14:58:41 +0200
+Subject: [PATCH] Improve nodes querying
+
+We've got a few similar stacktraces once. See the following one for
+example:
+
+** Reason for termination ==
+** {badarg,
+       [{ets,next,[sys_dist,'rabbitmq-cli-42@host.example.com'],[]},
+        {net_kernel,get_nodes,2,[{file,"net_kernel.erl"},{line,1025}]},
+        {net_kernel,get_nodes,2,[{file,"net_kernel.erl"},{line,1019}]},
+        {net_kernel,get_nodes_info,0,[{file,"net_kernel.erl"},{line,1439}]},
+        {rabbit_mgmt_external_stats,cluster_links,0,
+            [{file,"src/rabbit_mgmt_external_stats.erl"},{line,252}]},
+        {rabbit_mgmt_external_stats,emit_node_node_stats,1,
+            [{file,"src/rabbit_mgmt_external_stats.erl"},{line,366}]},
+        {rabbit_mgmt_external_stats,handle_info,2,
+            [{file,"src/rabbit_mgmt_external_stats.erl"},{line,347}]},
+        {gen_server,try_dispatch,4,[{file,"gen_server.erl"},{line,615}]}]}
+
+The problem is that when we're trying to query a list of connected
+nodes, we're doing it in the following way:
+
+  Call for the first record in ETS
+  While not EOF:
+    Call for the next record in ETS
+
+What happens, when some Node disconnects during the "not EOF" loop?
+We'll get an exception.
+
+Let's do it differently - query a list of nodes in one shot, and then
+get info from each of the nodes in list (w/o extra calls to ets). These
+individual calls care of disconnected nodes so everything will be fine
+even if a node disconnects.
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/lib/kernel/src/net_kernel.erl b/lib/kernel/src/net_kernel.erl
+index a9dc77837e..04025cf35b 100644
+--- a/lib/kernel/src/net_kernel.erl
++++ b/lib/kernel/src/net_kernel.erl
+@@ -670,24 +670,16 @@ code_change(_OldVsn, State, _Extra) ->
+ 
+ terminate(no_network, State) ->
+     lists:foreach(
+-      fun({Node, Type}) ->
+-	      case Type of
+-		  normal -> ?nodedown(Node, State);
+-		  _ -> ok
+-	      end
+-      end, get_up_nodes() ++ [{node(), normal}]);
++      fun(Node) -> ?nodedown(Node, State)
++      end, get_nodes_up_normal() ++ [node()]);
+ terminate(_Reason, State) ->
+     lists:foreach(
+       fun(#listen {listen = Listen,module = Mod}) ->
+ 	      Mod:close(Listen)
+       end, State#state.listen),
+     lists:foreach(
+-      fun({Node, Type}) ->
+-	      case Type of
+-		  normal -> ?nodedown(Node, State);
+-		  _ -> ok
+-	      end
+-      end, get_up_nodes() ++ [{node(), normal}]).
++      fun(Node) -> ?nodedown(Node, State)
++      end, get_nodes_up_normal() ++ [node()]).
+ 
+ 
+ %% ------------------------------------------------------------
+@@ -1139,35 +1131,10 @@ disconnect_pid(Pid, State) ->
+ %%
+ %%
+ %%
+-get_nodes(Which) ->
+-    get_nodes(ets:first(sys_dist), Which).
+ 
+-get_nodes('$end_of_table', _) ->
+-    [];
+-get_nodes(Key, Which) ->
+-    case ets:lookup(sys_dist, Key) of
+-	[Conn = #connection{state = up}] ->
+-	    [Conn#connection.node | get_nodes(ets:next(sys_dist, Key),
+-					      Which)];
+-	[Conn = #connection{}] when Which =:= all ->
+-	    [Conn#connection.node | get_nodes(ets:next(sys_dist, Key),
+-					      Which)];
+-	_ ->
+-	    get_nodes(ets:next(sys_dist, Key), Which)
+-    end.
+-
+-%% Return a list of all nodes that are 'up'.
+-get_up_nodes() ->
+-    get_up_nodes(ets:first(sys_dist)).
+-
+-get_up_nodes('$end_of_table') -> [];
+-get_up_nodes(Key) ->
+-    case ets:lookup(sys_dist, Key) of
+- 	[#connection{state=up,node=Node,type=Type}] ->
+- 	    [{Node,Type}|get_up_nodes(ets:next(sys_dist, Key))];
+- 	_ ->
+- 	    get_up_nodes(ets:next(sys_dist, Key))
+-    end.
++%% Return a list of all nodes that are 'up' and not hidden.
++get_nodes_up_normal() ->
++    ets:select(sys_dist, [{#connection{node = '$1', state = up, type = normal, _ = '_'}, [], ['$1']}]).
+ 
+ ticker(Kernel, Tick) when is_integer(Tick) ->
+     process_flag(priority, max),
+@@ -1632,15 +1599,14 @@ get_node_info(Node, Key) ->
+     end.
+ 
+ get_nodes_info() ->
+-    get_nodes_info(get_nodes(all), []).
+-
+-get_nodes_info([Node|Nodes], InfoList) ->
+-    case get_node_info(Node) of
+-	{ok, Info} -> get_nodes_info(Nodes, [{Node, Info}|InfoList]);
+-	_          -> get_nodes_info(Nodes, InfoList)
+-    end;
+-get_nodes_info([], InfoList) ->
+-    {ok, InfoList}.
++    Nodes = ets:select(sys_dist, [{#connection{node = '$1', _ = '_'}, [], ['$1']}]),
++    {ok, lists:filtermap(
++        fun(Node) ->
++            case get_node_info(Node) of
++                {ok, Info} -> {true, {Node, Info}};
++                _ -> false
++             end
++        end, Nodes)}.
+ 
+ %% ------------------------------------------------------------
+ %% Misc. functions
