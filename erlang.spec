@@ -11,7 +11,7 @@
 %global __with_wxwidgets 1
 Name:                erlang
 Version:             21.3.3
-Release:             1
+Release:             2
 Summary:             General-purpose programming language and runtime environment
 License:             ASL 2.0
 URL:                 https://www.erlang.org
@@ -627,14 +627,14 @@ pushd xemacs-erlang
 %{_xemacs_bytecompile} *.el
 popd
 %endif %{__with_xemacs}
-make
+make %{?_smp_mflags}
 %if %{with doc}
 %ifnarch ppc %{power64}
 export BASE_OPTIONS=-Xmx1024m
 %else
 export BASE_OPTIONS=-Xmx1536m
 %endif
-make docs
+make %{?_smp_mflags} docs
 %endif
 
 %install
@@ -1723,5 +1723,8 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %endif
 
 %changelog
+* Mon Mar 29 2021 weishengjing <weishengjing1@huawei.com> - 21.3.3-2
+- Support parallel compilation
+
 * Mon Aug 24 2020 chengzihan <chengzihan2@huawei.com> - 21.3.3-1
 - Package init
