@@ -11,7 +11,7 @@
 %global __with_wxwidgets 1
 Name:                erlang
 Version:             21.3.3
-Release:             2
+Release:             3
 Summary:             General-purpose programming language and runtime environment
 License:             ASL 2.0
 URL:                 https://www.erlang.org
@@ -31,6 +31,7 @@ Patch7:              otp-0007-Add-extra-search-directory.patch
 Patch8:              otp-0008-Avoid-forking-sed-to-get-basename.patch
 Patch9:              otp-0009-Load-man-pages-from-system-wide-directory.patch
 Patch10:             otp-0010-Improve-nodes-querying.patch
+Patch11:             extern-ei-default-socket-callbacks.patch
 BuildRequires:       gcc gcc-c++ flex
 %if %{with doc}
 %if 0%{?need_bootstrap} < 1
@@ -1723,6 +1724,9 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %endif
 
 %changelog
+* Fri Jul 30 2021 liping <liping136@huawei.com> - 21.3.3-3
+- Support parallel compilation
+
 * Sat Mar 27 2021 weishengjing <weishengjing1@huawei.com> - 21.3.3-2
 - Support parallel compilation
 
