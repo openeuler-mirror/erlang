@@ -11,7 +11,7 @@
 %global __with_wxwidgets 1
 Name:                erlang
 Version:             21.3.3
-Release:             3
+Release:             4
 Summary:             General-purpose programming language and runtime environment
 License:             ASL 2.0
 URL:                 https://www.erlang.org
@@ -32,6 +32,7 @@ Patch8:              otp-0008-Avoid-forking-sed-to-get-basename.patch
 Patch9:              otp-0009-Load-man-pages-from-system-wide-directory.patch
 Patch10:             otp-0010-Improve-nodes-querying.patch
 Patch11:             extern-ei-default-socket-callbacks.patch
+Patch12:             fix-build-error-for-autoconf-2.71.patch
 BuildRequires:       gcc gcc-c++ flex
 %if %{with doc}
 %if 0%{?need_bootstrap} < 1
@@ -1724,6 +1725,9 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %endif
 
 %changelog
+* Mon Jan 10 2022 wangkai <wangkai385@huawei.com> - 21.3.3-4
+- fix build error for autoconf 2.71
+
 * Fri Jul 30 2021 liping <liping136@huawei.com> - 21.3.3-3
 - Support parallel compilation
 
