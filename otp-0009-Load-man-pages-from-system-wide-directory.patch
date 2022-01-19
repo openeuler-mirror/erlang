@@ -7,10 +7,10 @@ Patch allows one to use standard man path with erl -man command.
 as required by Debian policy.)
 
 diff --git a/erts/etc/common/erlexec.c b/erts/etc/common/erlexec.c
-index 23bbb86333..741b492668 100644
+index 9dba684cbb..b4c5a8413f 100644
 --- a/erts/etc/common/erlexec.c
 +++ b/erts/etc/common/erlexec.c
-@@ -722,8 +722,10 @@ int main(int argc, char **argv)
+@@ -727,8 +727,10 @@ int main(int argc, char **argv)
  			error("-man not supported on Windows");
  #else
  			argv[i] = "man";

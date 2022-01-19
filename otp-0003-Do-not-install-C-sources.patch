@@ -14,7 +14,7 @@ https://bugzilla.redhat.com/818419
 Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
 
 diff --git a/lib/asn1/c_src/Makefile b/lib/asn1/c_src/Makefile
-index 1f714df357..95835d6ed2 100644
+index cb606fd74e..48a7c2f4f1 100644
 --- a/lib/asn1/c_src/Makefile
 +++ b/lib/asn1/c_src/Makefile
 @@ -136,8 +136,6 @@ include $(ERL_TOP)/make/otp_release_targets.mk
@@ -27,10 +27,10 @@ index 1f714df357..95835d6ed2 100644
  release_docs_spec:
  
 diff --git a/lib/crypto/c_src/Makefile.in b/lib/crypto/c_src/Makefile.in
-index a4a6c158cc..13658302f5 100644
+index c94f01420e..e2cae1692f 100644
 --- a/lib/crypto/c_src/Makefile.in
 +++ b/lib/crypto/c_src/Makefile.in
-@@ -216,16 +216,11 @@ docs:
+@@ -237,16 +237,11 @@ docs:
  include $(ERL_TOP)/make/otp_release_targets.mk
  
  release_spec: opt
@@ -48,12 +48,12 @@ index a4a6c158cc..13658302f5 100644
  
  release_docs_spec:
 diff --git a/lib/erl_interface/src/Makefile.in b/lib/erl_interface/src/Makefile.in
-index b0bb9bfadf..eeff0338c3 100644
+index 7ff3f09abb..2b94ce7de0 100644
 --- a/lib/erl_interface/src/Makefile.in
 +++ b/lib/erl_interface/src/Makefile.in
-@@ -842,14 +842,14 @@ ifneq ($(EXE_TARGETS),)
+@@ -748,14 +748,13 @@ release: opt
+ 	$(INSTALL_DATA) $(OBJ_TARGETS) "$(RELEASE_PATH)/usr/lib"
  	$(INSTALL_PROGRAM) $(EXE_TARGETS) "$(RELSYSDIR)/bin"
- endif
  	$(INSTALL_DATA) $(EXTRA)        "$(RELSYSDIR)/src"
 -	$(INSTALL_DATA) connect/*.[ch]  "$(RELSYSDIR)/src/connect"
 -	$(INSTALL_DATA) decode/*.[ch]   "$(RELSYSDIR)/src/decode"
@@ -61,7 +61,7 @@ index b0bb9bfadf..eeff0338c3 100644
 -	$(INSTALL_DATA) epmd/*.[ch]     "$(RELSYSDIR)/src/epmd"
 -	$(INSTALL_DATA) misc/*.[ch]     "$(RELSYSDIR)/src/misc"
 -	$(INSTALL_DATA) registry/*.[ch] "$(RELSYSDIR)/src/registry"
--	$(INSTALL_DATA) legacy/*.[ch]   "$(RELSYSDIR)/src/legacy"
+-	$(INSTALL_DATA) global/*.[ch]   "$(RELSYSDIR)/src/global"
 -	$(INSTALL_DATA) prog/*.[ch]     "$(RELSYSDIR)/src/prog"
 +	$(INSTALL_DATA) connect/*.h  "$(RELSYSDIR)/src/connect"
 +	$(INSTALL_DATA) decode/*.h   "$(RELSYSDIR)/src/decode"
@@ -69,16 +69,15 @@ index b0bb9bfadf..eeff0338c3 100644
 +	$(INSTALL_DATA) epmd/*.h     "$(RELSYSDIR)/src/epmd"
 +	$(INSTALL_DATA) misc/*.h     "$(RELSYSDIR)/src/misc"
 +	$(INSTALL_DATA) registry/*.h "$(RELSYSDIR)/src/registry"
-+	$(INSTALL_DATA) legacy/*.h   "$(RELSYSDIR)/src/legacy"
 +	$(INSTALL_DATA) prog/*.h     "$(RELSYSDIR)/src/prog"
  
  release_docs:
  
 diff --git a/lib/megaco/src/flex/Makefile.in b/lib/megaco/src/flex/Makefile.in
-index c37ad4d702..09bf1efe95 100644
+index cd409fa54f..c65e817385 100644
 --- a/lib/megaco/src/flex/Makefile.in
 +++ b/lib/megaco/src/flex/Makefile.in
-@@ -271,7 +271,7 @@ release_spec: opt
+@@ -251,7 +251,7 @@ release_spec: opt
  	$(INSTALL_DATA) $(ERL_FILES) $(INTERNAL_HRL_FILES) "$(RELSYSDIR)/src/flex"
  	$(INSTALL_DATA) $(TARGET_FILES) "$(RELSYSDIR)/ebin"
  ifeq ($(ENABLE_MEGACO_FLEX_SCANNER),true)
@@ -88,7 +87,7 @@ index c37ad4d702..09bf1efe95 100644
  endif
  
 diff --git a/lib/odbc/c_src/Makefile.in b/lib/odbc/c_src/Makefile.in
-index 784e73c47e..568c5e4c3e 100644
+index 3c16e7e294..82fe1492ef 100644
 --- a/lib/odbc/c_src/Makefile.in
 +++ b/lib/odbc/c_src/Makefile.in
 @@ -129,11 +129,8 @@ include $(ERL_TOP)/make/otp_release_targets.mk
@@ -117,10 +116,10 @@ index 27b156a2c9..f11ff303b6 100644
  	$(INSTALL_PROGRAM) $(TARGET_FILES) "$(RELSYSDIR)/priv/bin"
  
 diff --git a/lib/tools/c_src/Makefile.in b/lib/tools/c_src/Makefile.in
-index 289322b6fa..9e2b9b7e7c 100644
+index 8e13571786..ae18ef3cf4 100644
 --- a/lib/tools/c_src/Makefile.in
 +++ b/lib/tools/c_src/Makefile.in
-@@ -189,8 +189,6 @@ include ../vsn.mk
+@@ -188,8 +188,6 @@ include ../vsn.mk
  RELSYSDIR = $(RELEASE_PATH)/lib/tools-$(TOOLS_VSN)
  
  release_spec: all

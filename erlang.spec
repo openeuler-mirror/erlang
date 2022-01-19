@@ -1,442 +1,487 @@
 %global need_bootstrap_set 0
 %{!?need_bootstrap: %global need_bootstrap %{need_bootstrap_set}}
 %bcond_with doc
+
 %ifarch %{arm} %{ix86} x86_64 ppc %{power64}
 %global __with_hipe 1
 %endif
+
 %global __with_emacs 1
 %global __with_xemacs 0
 %global __with_examples 1
 %global __with_java 1
 %global __with_wxwidgets 1
-Name:                erlang
-Version:             21.3.3
-Release:             4
-Summary:             General-purpose programming language and runtime environment
-License:             ASL 2.0
-URL:                 https://www.erlang.org
-VCS:                 scm:git:https://github.com/erlang/otp
-Source0:             https://github.com/erlang/otp/archive/OTP-%{version}/otp-OTP-%{version}.tar.gz
-Source1:             epmd.service
-Source2:             epmd.socket
-Source3:             epmd@.service
-Source4:             epmd@.socket
-Patch1:              otp-0001-Do-not-format-man-pages-and-do-not-install-miscellan.patch
-Patch2:              otp-0002-Remove-rpath.patch
-Patch3:              otp-0003-Do-not-install-C-sources.patch
-Patch4:              otp-0004-Do-not-install-Java-sources.patch
-Patch5:              otp-0005-Do-not-install-nteventlog-and-related-doc-files-on-n.patch
-Patch6:              otp-0006-Do-not-install-erlang-sources.patch
-Patch7:              otp-0007-Add-extra-search-directory.patch
-Patch8:              otp-0008-Avoid-forking-sed-to-get-basename.patch
-Patch9:              otp-0009-Load-man-pages-from-system-wide-directory.patch
-Patch10:             otp-0010-Improve-nodes-querying.patch
-Patch11:             extern-ei-default-socket-callbacks.patch
-Patch12:             fix-build-error-for-autoconf-2.71.patch
-BuildRequires:       gcc gcc-c++ flex
+
+
+Name:		erlang
+Version:	23.3.4.9
+Release:	1
+Summary:	General-purpose programming language and runtime environment
+
+License:	ASL 2.0
+URL:		https://www.erlang.org
+VCS:		scm:git:https://github.com/erlang/otp
+Source0:	https://github.com/erlang/otp/archive/OTP-%{version}/otp-OTP-%{version}.tar.gz
+Source1:	epmd.service
+Source2:	epmd.socket
+Source3:	epmd@.service
+Source4:	epmd@.socket
+
+Patch1: otp-0001-Do-not-format-man-pages-and-do-not-install-miscellan.patch
+Patch2: otp-0002-Remove-rpath.patch
+Patch3: otp-0003-Do-not-install-C-sources.patch
+Patch4: otp-0004-Do-not-install-Java-sources.patch
+Patch5: otp-0005-Do-not-install-nteventlog-and-related-doc-files-on-n.patch
+Patch6: otp-0006-Do-not-install-erlang-sources.patch
+Patch7: otp-0007-Add-extra-search-directory.patch
+Patch8: otp-0008-Avoid-forking-sed-to-get-basename.patch
+Patch9: otp-0009-Load-man-pages-from-system-wide-directory.patch
+
+BuildRequires:	gcc
+BuildRequires:	gcc-c++
+BuildRequires:	flex
+BuildRequires:	make
+
 %if %{with doc}
 %if 0%{?need_bootstrap} < 1
-BuildRequires:       erlang
+# Required for building docs (escript)
+BuildRequires:	erlang
 %endif
 %endif
-BuildRequires:       systemd-devel systemd
+
+# for <systemd/sd-daemon.h>
+BuildRequires:	systemd-devel
+BuildRequires:	systemd
 %{?systemd_requires}
-Requires:            systemd
-BuildRequires:       autoconf automake
-Requires:            %{name}-asn1%{?_isa} = %{version}-%{release}
+Requires:	systemd
+BuildRequires:	autoconf
+BuildRequires:	automake
+#BuildRequires:	erlang-rpm-macros
+
+Requires: %{name}-asn1%{?_isa} = %{version}-%{release}
 %if %{__with_wxwidgets}
-Requires:            %{name}-common_test%{?_isa} = %{version}-%{release}
-%endif %{__with_wxwidgets}
-Requires:            %{name}-compiler%{?_isa} = %{version}-%{release}
-Requires:            %{name}-crypto%{?_isa} = %{version}-%{release}
+Requires: %{name}-common_test%{?_isa} = %{version}-%{release}
+%endif # __with_wxwidgets
+Requires: %{name}-compiler%{?_isa} = %{version}-%{release}
+Requires: %{name}-crypto%{?_isa} = %{version}-%{release}
 %if %{__with_wxwidgets}
-Requires:            %{name}-debugger%{?_isa} = %{version}-%{release}
-%endif %{__with_wxwidgets}
+Requires: %{name}-debugger%{?_isa} = %{version}-%{release}
+%endif # __with_wxwidgets
 %if %{__with_wxwidgets}
-Requires:            %{name}-dialyzer%{?_isa} = %{version}-%{release}
-%endif %{__with_wxwidgets}
-Requires:            %{name}-diameter%{?_isa} = %{version}-%{release}
-Requires:            %{name}-edoc%{?_isa} = %{version}-%{release}
-Requires:            %{name}-eldap%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erl_docgen%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erl_interface%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-dialyzer%{?_isa} = %{version}-%{release}
+%endif # __with_wxwidgets
+Requires: %{name}-diameter%{?_isa} = %{version}-%{release}
+Requires: %{name}-edoc%{?_isa} = %{version}-%{release}
+Requires: %{name}-eldap%{?_isa} = %{version}-%{release}
+Requires: %{name}-erl_docgen%{?_isa} = %{version}-%{release}
+Requires: %{name}-erl_interface%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
 %if %{__with_wxwidgets}
-Requires:            %{name}-et%{?_isa} = %{version}-%{release}
-%endif %{__with_wxwidgets}
-Requires:            %{name}-eunit%{?_isa} = %{version}-%{release}
-Requires:            %{name}-ftp%{?_isa} = %{version}-%{release}
-Requires:            %{name}-hipe%{?_isa} = %{version}-%{release}
-Requires:            %{name}-inets%{?_isa} = %{version}-%{release}
+Requires: %{name}-et%{?_isa} = %{version}-%{release}
+%endif # __with_wxwidgets
+Requires: %{name}-eunit%{?_isa} = %{version}-%{release}
+Requires: %{name}-ftp%{?_isa} = %{version}-%{release}
+Requires: %{name}-hipe%{?_isa} = %{version}-%{release}
+Requires: %{name}-inets%{?_isa} = %{version}-%{release}
 %if %{__with_java}
-Requires:            %{name}-jinterface%{?_isa} = %{version}-%{release}
-%endif %{__with_java}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-jinterface%{?_isa} = %{version}-%{release}
+%endif # __with_java
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
 %if %{__with_wxwidgets}
-Requires:            %{name}-megaco%{?_isa} = %{version}-%{release}
-%endif %{__with_wxwidgets}
-Requires:            %{name}-mnesia%{?_isa} = %{version}-%{release}
+Requires: %{name}-megaco%{?_isa} = %{version}-%{release}
+%endif # __with_wxwidgets
+Requires: %{name}-mnesia%{?_isa} = %{version}-%{release}
 %if %{__with_wxwidgets}
-Requires:            %{name}-observer%{?_isa} = %{version}-%{release}
-%endif %{__with_wxwidgets}
-Requires:            %{name}-odbc%{?_isa} = %{version}-%{release}
-Requires:            %{name}-os_mon%{?_isa} = %{version}-%{release}
-Requires:            %{name}-otp_mibs%{?_isa} = %{version}-%{release}
-Requires:            %{name}-parsetools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-public_key%{?_isa} = %{version}-%{release}
+Requires: %{name}-observer%{?_isa} = %{version}-%{release}
+%endif # __with_wxwidgets
+Requires: %{name}-odbc%{?_isa} = %{version}-%{release}
+Requires: %{name}-os_mon%{?_isa} = %{version}-%{release}
+Requires: %{name}-parsetools%{?_isa} = %{version}-%{release}
+Requires: %{name}-public_key%{?_isa} = %{version}-%{release}
 %if %{__with_wxwidgets}
-Requires:            %{name}-reltool%{?_isa} = %{version}-%{release}
-%endif %{__with_wxwidgets}
-Requires:            %{name}-runtime_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-sasl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-snmp%{?_isa} = %{version}-%{release}
-Requires:            %{name}-ssh%{?_isa} = %{version}-%{release}
-Requires:            %{name}-ssl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-syntax_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-tftp%{?_isa} = %{version}-%{release}
-Requires:            %{name}-tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-reltool%{?_isa} = %{version}-%{release}
+%endif # __with_wxwidgets
+Requires: %{name}-runtime_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-sasl%{?_isa} = %{version}-%{release}
+Requires: %{name}-snmp%{?_isa} = %{version}-%{release}
+Requires: %{name}-ssh%{?_isa} = %{version}-%{release}
+Requires: %{name}-ssl%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-syntax_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-tftp%{?_isa} = %{version}-%{release}
+Requires: %{name}-tools%{?_isa} = %{version}-%{release}
 %if %{__with_wxwidgets}
-Requires:            %{name}-wx%{?_isa} = %{version}-%{release}
-%endif %{__with_wxwidgets}
-Requires:            %{name}-xmerl%{?_isa} = %{version}-%{release}
+Requires: %{name}-wx%{?_isa} = %{version}-%{release}
+%endif # __with_wxwidgets
+Requires: %{name}-xmerl%{?_isa} = %{version}-%{release}
+
 %description
 Erlang is a general-purpose programming language and runtime
 environment. Erlang has built-in support for concurrency, distribution
 and fault tolerance. Erlang is used in several large telecommunication
 systems from Ericsson.
 
+### BEGIN OF AUTOGENERATED LIST ###
+
 %package asn1
-Summary:             Provides support for Abstract Syntax Notation One
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Provides support for Abstract Syntax Notation One
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description asn1
 Provides support for Abstract Syntax Notation One.
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %package common_test
-Summary:             A portable framework for automatic testing
-Requires:            %{name}-compiler%{?_isa} = %{version}-%{release}
-Requires:            %{name}-crypto%{?_isa} = %{version}-%{release}
-Requires:            %{name}-debugger%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-inets%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-observer%{?_isa} = %{version}-%{release}
-Requires:            %{name}-runtime_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-sasl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-snmp%{?_isa} = %{version}-%{release}
-Requires:            %{name}-ssh%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-syntax_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-xmerl%{?_isa} = %{version}-%{release}
-Obsoletes:           erlang-test_server
+Summary: A portable framework for automatic testing
+Requires: %{name}-compiler%{?_isa} = %{version}-%{release}
+Requires: %{name}-crypto%{?_isa} = %{version}-%{release}
+Requires: %{name}-debugger%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-inets%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-observer%{?_isa} = %{version}-%{release}
+Requires: %{name}-runtime_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-sasl%{?_isa} = %{version}-%{release}
+Requires: %{name}-snmp%{?_isa} = %{version}-%{release}
+Requires: %{name}-ssh%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-syntax_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-xmerl%{?_isa} = %{version}-%{release}
+Obsoletes: erlang-test_server
+
 %description common_test
 A portable framework for automatic testing.
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %package compiler
-Summary:             A byte code compiler for Erlang which produces highly compact code
-Requires:            %{name}-crypto%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-hipe%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: A byte code compiler for Erlang which produces highly compact code
+Requires: %{name}-crypto%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-hipe%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description compiler
 A byte code compiler for Erlang which produces highly compact code.
 
 %package crypto
-Summary:             Cryptographical support
-BuildRequires:       pkgconfig(openssl)
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Cryptographical support
+BuildRequires: pkgconfig(openssl)
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description crypto
 Cryptographical support.
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %package debugger
-Summary:             A debugger for debugging and testing of Erlang programs
-Requires:            %{name}-compiler%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-wx%{?_isa} = %{version}-%{release}
+Summary: A debugger for debugging and testing of Erlang programs
+Requires: %{name}-compiler%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-wx%{?_isa} = %{version}-%{release}
+
 %description debugger
 A debugger for debugging and testing of Erlang programs.
-%endif %{__with_wxwidgets}
-%if %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
+%if %{__with_wxwidgets}
 %package dialyzer
-Summary:             A DIscrepancy AnaLYZer for ERlang programs
-Requires:            %{name}-compiler%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-hipe%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-syntax_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-wx%{?_isa} = %{version}-%{release} graphviz
-Obsoletes:           erlang-typer
+Summary: A DIscrepancy AnaLYZer for ERlang programs
+Requires: %{name}-compiler%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-hipe%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-syntax_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-wx%{?_isa} = %{version}-%{release}
+Requires: graphviz
+Obsoletes: erlang-typer
+
 %description dialyzer
 A DIscrepancy AnaLYZer for ERlang programs.
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %package diameter
-Summary:             Diameter (RFC 3588) library
-BuildRequires:       ed
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-runtime_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-ssl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-syntax_tools%{?_isa} = %{version}-%{release}
+Summary: Diameter (RFC 3588) library
+BuildRequires: ed
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-runtime_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-ssl%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-syntax_tools%{?_isa} = %{version}-%{release}
+
 %description diameter
 Diameter (RFC 3588) library
-%if %{with doc}
 
+%if %{with doc}
 %package doc
-Summary:             Erlang documentation
-BuildRequires:       fop libxslt
-BuildArch:           noarch
+Summary: Erlang documentation
+BuildRequires: fop
+BuildRequires: libxslt
+BuildArch: noarch
+
 %description doc
 Documentation for Erlang.
 %endif
 
 %package edoc
-Summary:             A utility used to generate documentation out of tags in source files
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-inets%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-syntax_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-xmerl%{?_isa} = %{version}-%{release}
+Summary: A utility used to generate documentation out of tags in source files
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-inets%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-syntax_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-xmerl%{?_isa} = %{version}-%{release}
+
 %description edoc
 A utility used to generate documentation out of tags in source files.
 
 %package eldap
-Summary:             Erlang LDAP library
-Requires:            %{name}-asn1%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-ssl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Erlang LDAP library
+Requires: %{name}-asn1%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-ssl%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description eldap
 Erlang LDAP library.
 
 %package erl_docgen
-Summary:             A utility used to generate erlang HTML documentation
-Requires:            %{name}-edoc%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-xmerl%{?_isa} = %{version}-%{release}
+Summary: A utility used to generate erlang HTML documentation
+Requires: %{name}-edoc%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-xmerl%{?_isa} = %{version}-%{release}
+
 %description erl_docgen
 A utility used to generate erlang HTML documentation.
 
 %package erl_interface
-Summary:             Low level interface to C
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
+Summary: Low level interface to C
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+
 %description erl_interface
 Low level interface to C.
 
 %package erts
-Summary:             Functionality necessary to run the Erlang System itself
-BuildRequires:       lksctp-tools-devel m4 ncurses-devel zlib-devel
+Summary: Functionality necessary to run the Erlang System itself
+BuildRequires: lksctp-tools-devel
+BuildRequires: m4
+BuildRequires: ncurses-devel
+BuildRequires: zlib-devel
+# epmd user, epmd group
 Requires(pre): shadow-utils
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release} lksctp-tools
-Provides:            erlang(erl_drv_version) = 3.3
-Provides:            erlang(erl_nif_version) = 2.14
-Provides:            bundled(pcre) = 8.33
-Obsoletes:           erlang-appmon
-Obsoletes:           erlang-docbuilder
-Obsoletes:           erlang-gs
-Obsoletes:           erlang-inviso
-Obsoletes:           erlang-ose
-Obsoletes:           erlang-percept < 20.2.3
-Obsoletes:           erlang-pman
-Obsoletes:           erlang-toolbar
-Obsoletes:           erlang-tv
-Obsoletes:           erlang-webtool
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: lksctp-tools
+Provides: erlang(erl_drv_version) = 3.3
+Provides: erlang(erl_nif_version) = 2.15
+Provides: bundled(pcre) = 8.33
+Obsoletes: erlang-appmon
+Obsoletes: erlang-docbuilder
+Obsoletes: erlang-gs
+Obsoletes: erlang-inviso
+Obsoletes: erlang-ose
+Obsoletes: erlang-otp_mibs
+# Moved to https://github.com/erlang/percept
+Obsoletes: erlang-percept < 20.2.3
+Obsoletes: erlang-pman
+Obsoletes: erlang-toolbar
+Obsoletes: erlang-tv
+Obsoletes: erlang-webtool
+
 %description erts
 Functionality necessary to run the Erlang System itself.
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %package et
-Summary:             An event tracer for Erlang programs
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-runtime_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-wx%{?_isa} = %{version}-%{release}
+Summary: An event tracer for Erlang programs
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-runtime_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-wx%{?_isa} = %{version}-%{release}
+
 %description et
 An event tracer for Erlang programs.
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %package eunit
-Summary:             Support for unit testing
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Support for unit testing
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description eunit
 Support for unit testing.
-%if %{__with_examples}
 
+%if %{__with_examples}
 %package examples
-Summary:             Examples for some Erlang modules
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-public_key%{?_isa} = %{version}-%{release}
-Requires:            %{name}-sasl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-ssl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Examples for some Erlang modules
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-public_key%{?_isa} = %{version}-%{release}
+Requires: %{name}-sasl%{?_isa} = %{version}-%{release}
+Requires: %{name}-ssl%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description examples
 Examples for some Erlang modules.
 %endif %{__with_examples}
 
 %package ftp
-Summary:             FTP client
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: FTP client
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description ftp
 FTP client.
 
 %package hipe
-Summary:             High Performance Erlang
-Requires:            %{name}-compiler%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-syntax_tools%{?_isa} = %{version}-%{release}
+Summary: High Performance Erlang
+Requires: %{name}-compiler%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-syntax_tools%{?_isa} = %{version}-%{release}
+
 %description hipe
 High Performance Erlang.
 
 %package inets
-Summary:             A set of services such as a Web server and a HTTP client etc
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-mnesia%{?_isa} = %{version}-%{release}
-Requires:            %{name}-runtime_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-ssl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: A set of services such as a Web server and a HTTP client etc
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-mnesia%{?_isa} = %{version}-%{release}
+Requires: %{name}-runtime_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-ssl%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description inets
 A set of services such as a Web server and a HTTP client etc.
-%if %{__with_java}
 
+%if %{__with_java}
 %package jinterface
-Summary:             A library for accessing Java from Erlang
-BuildRequires:       java-devel
-Requires:            javapackages-tools %{name}-erts%{?_isa} = %{version}-%{release}
+Summary: A library for accessing Java from Erlang
+BuildRequires: java-devel
+Requires: javapackages-tools
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+
 %description jinterface
 Low level interface to Java.
-%endif %{__with_java}
+%endif # __with_java
 
 %package kernel
-Summary:             Main erlang library
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Main erlang library
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description kernel
 Main erlang library.
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %package megaco
-Summary:             Megaco/H.248 support library
-Requires:            %{name}-asn1%{?_isa} = %{version}-%{release}
-Requires:            %{name}-debugger%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-et%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-runtime_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Megaco/H.248 support library
+Requires: %{name}-asn1%{?_isa} = %{version}-%{release}
+Requires: %{name}-debugger%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-et%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-runtime_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description megaco
 Megaco/H.248 is a protocol for control of elements in a physically
 decomposed multimedia gateway, enabling separation of call control
 from media conversion.
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %package mnesia
-Summary:             A heavy duty real-time distributed database
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: A heavy duty real-time distributed database
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description mnesia
 A heavy duty real-time distributed database.
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %package observer
-Summary:             A set of tools for tracing and investigation of distributed systems
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-et%{?_isa} = %{version}-%{release}
-Requires:            %{name}-inets%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-runtime_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-wx%{?_isa} = %{version}-%{release}
+Summary: A set of tools for tracing and investigation of distributed systems
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-et%{?_isa} = %{version}-%{release}
+Requires: %{name}-inets%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-runtime_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-wx%{?_isa} = %{version}-%{release}
+
 %description observer
 A set of tools for tracing and investigation of distributed systems.
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %package odbc
-Summary:             A library for unixODBC support in Erlang
-BuildRequires:       unixODBC-devel
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: A library for unixODBC support in Erlang
+BuildRequires: unixODBC-devel
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description odbc
 An interface to relational SQL-databases built on ODBC (Open Database
 Connectivity).
 
 %package os_mon
-Summary:             A monitor which allows inspection of the underlying operating system
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-mnesia%{?_isa} = %{version}-%{release}
-Requires:            %{name}-otp_mibs%{?_isa} = %{version}-%{release}
-Requires:            %{name}-sasl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-snmp%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: A monitor which allows inspection of the underlying operating system
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-mnesia%{?_isa} = %{version}-%{release}
+Requires: %{name}-sasl%{?_isa} = %{version}-%{release}
+Requires: %{name}-snmp%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description os_mon
 A monitor which allows inspection of the underlying operating system.
 
-%package otp_mibs
-Summary:             SNMP management information base for Erlang/OTP nodes
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-mnesia%{?_isa} = %{version}-%{release}
-Requires:            %{name}-snmp%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-%description otp_mibs
-SNMP management information base for Erlang/OTP nodes.
-
 %package parsetools
-Summary:             A set of parsing and lexical analysis tools
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: A set of parsing and lexical analysis tools
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description parsetools
 A set of parsing and lexical analysis tools.
 
 %package public_key
-Summary:             API to public key infrastructure
-Requires:            %{name}-asn1%{?_isa} = %{version}-%{release}
-Requires:            %{name}-crypto%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: API to public key infrastructure
+Requires: %{name}-asn1%{?_isa} = %{version}-%{release}
+Requires: %{name}-crypto%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description public_key
 API to public key infrastructure.
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %package reltool
-Summary:             A release management tool
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-sasl%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-wx%{?_isa} = %{version}-%{release}
+Summary: A release management tool
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-sasl%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-wx%{?_isa} = %{version}-%{release}
+
 %description reltool
 Reltool is a release management tool. It analyses a given
 Erlang/OTP installation and determines various dependencies
@@ -444,132 +489,140 @@ between applications. The graphical frontend depicts the
 dependencies and enables interactive customization of a
 target system. The backend provides a batch interface
 for generation of customized target systems.
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %package runtime_tools
-Summary:             A set of tools to include in a production system
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-mnesia%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: A set of tools to include in a production system
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-mnesia%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description runtime_tools
 A set of tools to include in a production system.
 
 %package sasl
-Summary:             The System Architecture Support Libraries
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
-Requires:            %{name}-tools%{?_isa} = %{version}-%{release}
+Summary: The System Architecture Support Libraries
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-tools%{?_isa} = %{version}-%{release}
+
 %description sasl
 The System Architecture Support Libraries is a set of tools for
 release upgrades and alarm handling etc.
 
 %package snmp
-Summary:             Simple Network Management Protocol (SNMP) support
-Requires:            %{name}-crypto%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-mnesia%{?_isa} = %{version}-%{release}
-Requires:            %{name}-runtime_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Simple Network Management Protocol (SNMP) support
+Requires: %{name}-crypto%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-mnesia%{?_isa} = %{version}-%{release}
+Requires: %{name}-runtime_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description snmp
 Simple Network Management Protocol (SNMP) support including a
 MIB compiler and tools for creating SNMP agents.
 
 %package ssh
-Summary:             Secure Shell application with sftp and ssh support
-Requires:            %{name}-crypto%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-public_key%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Secure Shell application with sftp and ssh support
+Requires: %{name}-crypto%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-public_key%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description ssh
 Secure Shell application with sftp and ssh support.
 
 %package ssl
-Summary:             Secure Socket Layer support
-Requires:            %{name}-crypto%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-inets%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-public_key%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Secure Socket Layer support
+Requires: %{name}-crypto%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-inets%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-public_key%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description ssl
 Secure Socket Layer support.
 
 %package stdlib
-Summary:             The Erlang standard libraries
-Requires:            %{name}-compiler%{?_isa} = %{version}-%{release}
-Requires:            %{name}-crypto%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
+Summary: The Erlang standard libraries
+Requires: %{name}-compiler%{?_isa} = %{version}-%{release}
+Requires: %{name}-crypto%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+
 %description stdlib
 The Erlang standard libraries.
 
 %package syntax_tools
-Summary:             A set of tools for dealing with erlang sources
-Requires:            %{name}-compiler%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: A set of tools for dealing with erlang sources
+Requires: %{name}-compiler%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description syntax_tools
 A utility used to handle abstract Erlang syntax trees,
 reading source files differently, pretty-printing syntax trees.
 
 %package tftp
-Summary:             TFTP client
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: TFTP client
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description tftp
 TFTP client.
 
 %package tools
-Summary:             A set of programming tools including a coverage analyzer etc
+Summary: A set of programming tools including a coverage analyzer etc
 %if %{__with_emacs}
-BuildRequires:       emacs emacs-el
+BuildRequires: emacs
+BuildRequires: emacs-el
 %endif %{__with_emacs}
-%if %{__with_xemacs}
-BuildRequires:       xemacs xemacs-packages-extra-el
-%endif %{__with_xemacs}
-Requires:            %{name}-compiler%{?_isa} = %{version}-%{release}
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-inets%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-runtime_tools%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: %{name}-compiler%{?_isa} = %{version}-%{release}
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-inets%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-runtime_tools%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
 %if %{__with_emacs}
-Requires:            emacs-filesystem
-Obsoletes:           emacs-erlang
-Obsoletes:           emacs-erlang-el
+Requires: emacs-filesystem
+Obsoletes: emacs-erlang
+Obsoletes: emacs-erlang-el
 %endif %{__with_emacs}
-%if %{__with_xemacs}
-Requires:            xemacs-filesystem
-Obsoletes:           xemacs-erlang
-Obsoletes:           xemacs-erlang-el
-%endif %{__with_xemacs}
+
+
 %description tools
 A set of programming tools including a coverage analyzer etc.
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %package wx
-Summary:             A library for wxWidgets support in Erlang
-BuildRequires:       wxGTK3-devel
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release} mesa-libGL mesa-libGLU
+Summary: A library for wxWidgets support in Erlang
+BuildRequires: wxGTK3-devel
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+Requires: mesa-libGL
+Requires: mesa-libGLU
+
 %description wx
 A Graphics System used to write platform independent user interfaces.
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %package xmerl
-Summary:             Provides support for XML 1.0
-Requires:            %{name}-erts%{?_isa} = %{version}-%{release}
-Requires:            %{name}-kernel%{?_isa} = %{version}-%{release}
-Requires:            %{name}-stdlib%{?_isa} = %{version}-%{release}
+Summary: Provides support for XML 1.0
+Requires: %{name}-erts%{?_isa} = %{version}-%{release}
+Requires: %{name}-kernel%{?_isa} = %{version}-%{release}
+Requires: %{name}-stdlib%{?_isa} = %{version}-%{release}
+
 %description xmerl
 Provides support for XML 1.0.
+
 
 %prep
 %autosetup -p1 -n otp-OTP-%{version}
@@ -582,25 +635,28 @@ ERL_FLAGS="${RPM_OPT_FLAGS} -mcpu=ultrasparc -fno-strict-aliasing"
 ERL_FLAGS="${RPM_OPT_FLAGS} -fno-strict-aliasing"
 %endif
 CFLAGS="${ERL_FLAGS}" CXXFLAGS="${ERL_FLAGS}" %configure --enable-shared-zlib --enable-sctp --enable-systemd --disable-silent-rules \
-    %{?__with_hipe:--enable-hipe} \
+	%{?__with_hipe:--enable-hipe} \
+        %{?__without_kernel_poll:--disable-kernel-poll} \
 %if %{__with_java}
-    \
+	\
 %else
-    --without-jinterface \
-%endif %{__with_java}
+	--without-jinterface \
+%endif # __with_java
 %if %{__with_wxwidgets}
-    --with-wx-config=/usr/bin/wx-config-3.0
+	--with-wx-config=/usr/bin/wx-config-3.0
 %else
-    --without-common_test \
-    --without-debugger \
-    --without-dialyzer \
-    --without-et \
-    --without-megaco \
-    --without-observer \
-    --without-reltool \
-    --without-wx
-%endif %{__with_wxwidgets}
+	--without-common_test \
+	--without-debugger \
+	--without-dialyzer \
+	--without-et \
+	--without-megaco \
+	--without-observer \
+	--without-reltool \
+	--without-wx
+%endif # __with_wxwidgets
+
 make clean
+
 %if %{__with_emacs}
 erlang_tools_vsn="$(sed -n 's/TOOLS_VSN = //p' lib/tools/vsn.mk)"
 cat > emacs-erlang-init.el << EOF
@@ -614,68 +670,52 @@ cp lib/tools/emacs/*.el emacs-erlang/
 pushd emacs-erlang
 %{_emacs_bytecompile} *.el
 popd
-%endif %{__with_emacs}
-%if %{__with_xemacs}
-cat > xemacs-erlang-init.el << EOF
-(setq load-path (cons "%{_xemacs_sitelispdir}/erlang" load-path))
-(setq erlang-root-dir "%{_libdir}/erlang")
-(setq exec-path (cons "%{_libdir}/erlang/bin" exec-path))
-(require 'erlang-start)
-EOF
-mkdir xemacs-erlang
-cp lib/tools/emacs/*.el xemacs-erlang/
-rm -f xemacs-erlang/erlang-flymake.el xemacs-erlang/erlang-test.el xemacs-erlang/erldoc.el xemacs-erlang/erlang-edoc.el
-pushd xemacs-erlang
-%{_xemacs_bytecompile} *.el
-popd
-%endif %{__with_xemacs}
-make %{?_smp_mflags}
+%endif # __with_emacs
+
+make
+
 %if %{with doc}
 %ifnarch ppc %{power64}
 export BASE_OPTIONS=-Xmx1024m
 %else
 export BASE_OPTIONS=-Xmx1536m
 %endif
-make %{?_smp_mflags} docs
+make docs
 %endif
+
 
 %install
 %if %{__with_emacs}
 erlang_tools_vsn="$(sed -n 's/TOOLS_VSN = //p' lib/tools/vsn.mk)"
+
 install -m 0755 -d "$RPM_BUILD_ROOT%{_emacs_sitestartdir}"
 install -m 0755 -d "$RPM_BUILD_ROOT%{_emacs_sitelispdir}/erlang"
 install -m 0644 emacs-erlang-init.el "$RPM_BUILD_ROOT%{_emacs_sitestartdir}/erlang-init.el"
 for f in lib/tools/emacs/{README,*.el}; do
-    b="$(basename "$f")";
-    ln -s "%{_libdir}/erlang/lib/tools-${erlang_tools_vsn}/emacs/$b" \
-        "$RPM_BUILD_ROOT%{_emacs_sitelispdir}/erlang/"
+	b="$(basename "$f")";
+	ln -s "%{_libdir}/erlang/lib/tools-${erlang_tools_vsn}/emacs/$b" \
+		"$RPM_BUILD_ROOT%{_emacs_sitelispdir}/erlang/"
 done
 install -m 0644 emacs-erlang/*.elc "$RPM_BUILD_ROOT%{_emacs_sitelispdir}/erlang/"
 %endif %{__with_emacs}
-%if %{__with_xemacs}
-install -m 0755 -d "$RPM_BUILD_ROOT%{_xemacs_sitestartdir}"
-install -m 0755 -d "$RPM_BUILD_ROOT%{_xemacs_sitelispdir}/erlang"
-install -m 0644 xemacs-erlang-init.el "$RPM_BUILD_ROOT%{_xemacs_sitestartdir}/erlang-init.el"
-for f in lib/tools/emacs/{README,*.el}; do
-    b="$(basename "$f")";
-    ln -s "%{_libdir}/erlang/lib/tools-${erlang_tools_vsn}/emacs/$b" \
-        "$RPM_BUILD_ROOT%{_xemacs_sitelispdir}/erlang/"
-done
-rm -f "$RPM_BUILD_ROOT%{_xemacs_sitelispdir}/erlang/erlang-flymake.el"
-install -m 0644 xemacs-erlang/*.elc "$RPM_BUILD_ROOT%{_xemacs_sitelispdir}/erlang/"
-%endif %{__with_xemacs}
+
 make DESTDIR=$RPM_BUILD_ROOT install
+
 %if %{with doc}
 env ERL_LIBS="$RPM_BUILD_ROOT%{_libdir}/erlang/lib" make DESTDIR=$RPM_BUILD_ROOT install-docs
 %endif
+
 find $RPM_BUILD_ROOT%{_libdir}/erlang -type f -name info -exec rm -f {} \;
+
 %if %{__with_examples}
 find $RPM_BUILD_ROOT%{_libdir}/erlang/lib/ssl-*/examples/ -type d -perm 0775 -print -exec chmod 755 {} \;
 find $RPM_BUILD_ROOT%{_libdir}/erlang/lib/kernel-*/examples/uds_dist -type d -perm 0775 -print -exec chmod 755 {} \;
 %else
 find $RPM_BUILD_ROOT%{_libdir}/erlang/lib/ -mindepth 1 -maxdepth 2 -type d -name examples -exec rm -rf {} \;
 %endif %{__with_examples}
+
 chmod 0755 $RPM_BUILD_ROOT%{_libdir}/erlang/bin
+
 %if %{with doc}
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/lib
 pushd .
@@ -690,71 +730,90 @@ mv -v $RPM_BUILD_ROOT%{_libdir}/erlang/PR.template $RPM_BUILD_ROOT%{_docdir}/%{n
 mv -v $RPM_BUILD_ROOT%{_libdir}/erlang/COPYRIGHT $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 rm -f $RPM_BUILD_ROOT%{_libdir}/erlang/README.md
 %endif
+
 rm -f $RPM_BUILD_ROOT%{_libdir}/erlang/man/man1/erlsrv.*
 rm -f $RPM_BUILD_ROOT%{_libdir}/erlang/man/man1/werl.*
 rm -f $RPM_BUILD_ROOT%{_libdir}/erlang/man/man3/win32reg.*
+
 rm -r $RPM_BUILD_ROOT%{_libdir}/erlang/erts-*/man
+
 %if %{with doc}
 for manpage in $RPM_BUILD_ROOT%{_libdir}/erlang/man/man3/*
 do
-    mv ${manpage} ${manpage}erl
+	mv ${manpage} ${manpage}erl
 done
 mkdir -p $RPM_BUILD_ROOT%{_mandir}/
 mv $RPM_BUILD_ROOT%{_libdir}/erlang/man/* $RPM_BUILD_ROOT%{_mandir}/
 %endif
+
 rm -f $RPM_BUILD_ROOT%{_libdir}/erlang/Install
+
 for exe in $RPM_BUILD_ROOT%{_libdir}/erlang/erts-*/bin/*
 do
-    base="$(basename "$exe")"
-    next="$RPM_BUILD_ROOT%{_libdir}/erlang/bin/${base}"
-    rel="$(echo "$exe" | sed "s,^$RPM_BUILD_ROOT%{_libdir}/erlang/,../,")"
-    if cmp "$exe" "$next"; then
-        ln -sf "$rel" "$next"
-    fi
+	base="$(basename "$exe")"
+	next="$RPM_BUILD_ROOT%{_libdir}/erlang/bin/${base}"
+	rel="$(echo "$exe" | sed "s,^$RPM_BUILD_ROOT%{_libdir}/erlang/,../,")"
+	if cmp "$exe" "$next"; then
+		ln -sf "$rel" "$next"
+	fi
 done
 for exe in $RPM_BUILD_ROOT%{_libdir}/erlang/bin/*
 do
-    base="$(basename "$exe")"
-    next="$RPM_BUILD_ROOT%{_bindir}/${base}"
-    rel="$(echo "$exe" | sed "s,^$RPM_BUILD_ROOT,,")"
-    if cmp "$exe" "$next"; then
-        ln -sf "$rel" "$next"
-    fi
+	base="$(basename "$exe")"
+	next="$RPM_BUILD_ROOT%{_bindir}/${base}"
+	rel="$(echo "$exe" | sed "s,^$RPM_BUILD_ROOT,,")"
+	if cmp "$exe" "$next"; then
+		ln -sf "$rel" "$next"
+	fi
 done
+
 %if %{__with_java}
 install -m 0755 -d "$RPM_BUILD_ROOT%{_javadir}/%{name}"
+
 jinterface_lib_dir="$(ls -d1 $RPM_BUILD_ROOT%{_libdir}/erlang/lib/jinterface-*/ | sed "s,^$RPM_BUILD_ROOT,,")"
 test -d "$RPM_BUILD_ROOT$jinterface_lib_dir"
 ln -s "${jinterface_lib_dir}priv/OtpErlang.jar" "$RPM_BUILD_ROOT%{_javadir}/%{name}/"
-%endif %{__with_java}
+%endif # __with_java
+
+%if ! (0%{?rhel} && 0%{?rhel} <= 6)
 install -D -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/epmd.service
 install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/epmd.socket
 install -D -p -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}/epmd@.service
 install -D -p -m 0644 %{SOURCE4} %{buildroot}%{_unitdir}/epmd@.socket
+%endif
+
+
 %if %{__with_wxwidgets}
 echo "No need to fix additional scripts"
 %else
 echo "Removing scripts which won't work w/o wxWidgets anyway"
 for exe in ct_run dialyzer typer
 do
-    rm -f $RPM_BUILD_ROOT/%{_bindir}/${exe}
-    rm -f $RPM_BUILD_ROOT/%{_libdir}/erlang/bin/${exe}
-    rm -f $RPM_BUILD_ROOT/%{_libdir}/erlang/erts-*/bin/${exe}
+	rm -f $RPM_BUILD_ROOT/%{_bindir}/${exe}
+	rm -f $RPM_BUILD_ROOT/%{_libdir}/erlang/bin/${exe}
+	rm -f $RPM_BUILD_ROOT/%{_libdir}/erlang/erts-*/bin/${exe}
 done
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
+
 install -d -p -m 0755 %{buildroot}%{_datadir}/erlang/
 install -d -p -m 0755 %{buildroot}%{_datadir}/erlang/lib
+
 
 %check
 TARGET="$(make target_configured)"
 ERL_TOP="$(pwd)"
 ERL_TOP=${ERL_TOP} make TARGET=${TARGET} release_tests
+# Unfortunately running the tests will take several hours. So we build the
+# package w/o tests for now. See this:
+# https://github.com/erlang/otp/wiki/Running-tests
+
 
 %pre erts
 getent group epmd >/dev/null || groupadd -r epmd
 getent passwd epmd >/dev/null || \
 useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 -c "Erlang Port Mapper Daemon" epmd 2>/dev/null || :
+
 
 %files
 %if %{with doc}
@@ -774,8 +833,8 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %if %{with doc}
 %{_mandir}/man3/asn1ct.*
 %endif
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %files common_test
 %{_bindir}/ct_run
 %{_libdir}/erlang/bin/ct_run
@@ -794,16 +853,20 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/ct_slave.*
 %{_mandir}/man3/ct_snmp.*
 %{_mandir}/man3/ct_ssh.*
+%{_mandir}/man3/ct_suite.*
 %{_mandir}/man3/ct_telnet.*
 %{_mandir}/man3/ct_testspec.*
 %{_mandir}/man3/unix_telnet.*
 %{_mandir}/man6/common_test.*
 %endif
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %files compiler
 %{_libdir}/erlang/lib/compiler-*/
 %if %{with doc}
+%{_mandir}/man3/cerl.*
+%{_mandir}/man3/cerl_clauses.*
+%{_mandir}/man3/cerl_trees.*
 %{_mandir}/man3/compile.*
 %endif
 
@@ -813,8 +876,8 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/crypto.*
 %{_mandir}/man6/crypto.*
 %endif
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %files debugger
 %{_libdir}/erlang/lib/debugger-*/
 %if %{with doc}
@@ -822,11 +885,12 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/i.*
 %{_mandir}/man3/int.*
 %endif
-%endif %{__with_wxwidgets}
-%if %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
+%if %{__with_wxwidgets}
 %files dialyzer
 %{_bindir}/dialyzer
+# FIXME FIXME FIXME this must be installed properly!!!!!!
 %{_bindir}/typer
 %{_libdir}/erlang/bin/dialyzer
 %{_libdir}/erlang/bin/typer
@@ -834,10 +898,10 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_libdir}/erlang/erts-*/bin/typer
 %{_libdir}/erlang/lib/dialyzer-*/
 %if %{with doc}
+%{_mandir}/man1/typer.*
 %{_mandir}/man3/dialyzer.*
-%{_mandir}/man3/typer.*
 %endif
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %files diameter
 %dir %{_libdir}/erlang/lib/diameter-*/
@@ -856,8 +920,8 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/diameter_transport.*
 %{_mandir}/man4/diameter_dict.*
 %endif
-%if %{with doc}
 
+%if %{with doc}
 %files doc
 %doc %{_docdir}/%{name}-%{version}/doc
 %doc %{_docdir}/%{name}-%{version}/erts-*/
@@ -888,28 +952,35 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %endif
 
 %files erl_interface
+%{_libdir}/erlang/bin/erl_call
+%{_libdir}/erlang/erts-*/bin/erl_call
 %{_libdir}/erlang/lib/erl_interface-*/
 %if %{with doc}
 %{_mandir}/man1/erl_call.*
 %{_mandir}/man3/ei.*
 %{_mandir}/man3/ei_connect.*
-%{_mandir}/man3/erl_connect.*
-%{_mandir}/man3/erl_error.*
-%{_mandir}/man3/erl_eterm.*
-%{_mandir}/man3/erl_format.*
-%{_mandir}/man3/erl_global.*
-%{_mandir}/man3/erl_malloc.*
-%{_mandir}/man3/erl_marshal.*
+%{_mandir}/man3/ei_global.*
+#%%{_mandir}/man3/erl_connect.*
+#%%{_mandir}/man3/erl_error.*
+#%%{_mandir}/man3/erl_eterm.*
+#%%{_mandir}/man3/erl_format.*
+#%%{_mandir}/man3/erl_global.*
+#%%{_mandir}/man3/erl_malloc.*
+#%%{_mandir}/man3/erl_marshal.*
 %{_mandir}/man3/registry.*
 %endif
 
 %files erts
+# TODO
+# In order to have a parallel-installable Erlang packages these directories
+# should be packaged separately
 %dir %{_datadir}/erlang/
 %dir %{_datadir}/erlang/lib/
 %dir %{_libdir}/erlang/
 %dir %{_libdir}/erlang/bin/
 %dir %{_libdir}/erlang/lib/
 %dir %{_libdir}/erlang/releases/
+
 %{_bindir}/epmd
 %{_bindir}/erl
 %{_bindir}/erlc
@@ -947,6 +1018,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_libdir}/erlang/erts-*/bin/start.src
 %{_libdir}/erlang/erts-*/bin/start_erl.src
 %{_libdir}/erlang/erts-*/bin/to_erl
+%{_libdir}/erlang/erts-*/bin/yielding_c_fun
 %{_libdir}/erlang/erts-*/include
 %{_libdir}/erlang/erts-*/lib/
 %{_libdir}/erlang/erts-*/src/
@@ -969,18 +1041,22 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/erlang.*
 %{_mandir}/man3/erts_alloc.*
 %{_mandir}/man3/init.*
+%{_mandir}/man3/net.*
 %{_mandir}/man3/persistent_term.*
 %{_mandir}/man3/scheduler.*
+%{_mandir}/man3/socket.*
 %{_mandir}/man3/zlib.*
 %endif
 %{_libdir}/erlang/releases/*
 %{_libdir}/erlang/usr/
+%if ! (0%{?rhel} && 0%{?rhel} <= 6)
 %{_unitdir}/epmd.service
 %{_unitdir}/epmd.socket
 %{_unitdir}/epmd@.service
 %{_unitdir}/epmd@.socket
-%if %{__with_wxwidgets}
+%endif
 
+%if %{__with_wxwidgets}
 %files et
 %dir %{_libdir}/erlang/lib/et-*/
 %{_libdir}/erlang/lib/et-*/ebin
@@ -992,7 +1068,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/et_selector.*
 %{_mandir}/man3/et_viewer.*
 %endif
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %files eunit
 %dir %{_libdir}/erlang/lib/eunit-*/
@@ -1003,25 +1079,27 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/eunit.*
 %{_mandir}/man3/eunit_surefire.*
 %endif
-%if %{__with_examples}
 
+%if %{__with_examples}
 %files examples
 %{_libdir}/erlang/lib/asn1-*/examples/
 %{_libdir}/erlang/lib/diameter-*/examples/
 %if %{__with_wxwidgets}
 %{_libdir}/erlang/lib/et-*/examples/
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 %{_libdir}/erlang/lib/eunit-*/examples/
 %{_libdir}/erlang/lib/inets-*/examples/
 %{_libdir}/erlang/lib/kernel-*/examples/
+%if %{__with_wxwidgets}
 %{_libdir}/erlang/lib/megaco-*/examples/
+%endif # __with_wxwidgets
 %{_libdir}/erlang/lib/mnesia-*/examples/
 %if %{__with_wxwidgets}
 %{_libdir}/erlang/lib/observer-*/examples/
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 %if %{__with_wxwidgets}
 %{_libdir}/erlang/lib/reltool-*/examples/
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 %{_libdir}/erlang/lib/runtime_tools-*/examples/
 %{_libdir}/erlang/lib/sasl-*/examples/
 %{_libdir}/erlang/lib/snmp-*/examples/
@@ -1031,7 +1109,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_libdir}/erlang/lib/tools-*/examples/
 %if %{__with_wxwidgets}
 %{_libdir}/erlang/lib/wx-*/examples/
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 %endif %{__with_examples}
 
 %files ftp
@@ -1066,13 +1144,16 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/mod_security.*
 %{_mandir}/man3/tftp.*
 %endif
-%if %{__with_java}
 
+%if %{__with_java}
 %files jinterface
 %dir %{_javadir}/%{name}/
 %{_javadir}/%{name}/OtpErlang.jar
 %{_libdir}/erlang/lib/jinterface-*/
-%endif %{__with_java}
+%if %{with doc}
+%{_mandir}/man3/jinterface.*
+%endif
+%endif # __with_java
 
 %files kernel
 %dir %{_libdir}/erlang/lib/kernel-*/
@@ -1089,6 +1170,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/erl_epmd.*
 %{_mandir}/man3/erl_prim_loader_stub.*
 %{_mandir}/man3/erlang_stub.*
+%{_mandir}/man3/erpc.*
 %{_mandir}/man3/error_handler.*
 %{_mandir}/man3/error_logger.*
 %{_mandir}/man3/file.*
@@ -1109,6 +1191,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/net_adm.*
 %{_mandir}/man3/net_kernel.*
 %{_mandir}/man3/os.*
+%{_mandir}/man3/pg.*
 %{_mandir}/man3/pg2.*
 %{_mandir}/man3/rpc.*
 %{_mandir}/man3/seq_trace.*
@@ -1119,8 +1202,8 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man4/config.*
 %{_mandir}/man6/kernel.*
 %endif
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %files megaco
 %dir %{_libdir}/erlang/lib/megaco-*/
 %{_libdir}/erlang/lib/megaco-*/ebin
@@ -1141,7 +1224,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/megaco_udp.*
 %{_mandir}/man3/megaco_user.*
 %endif
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %files mnesia
 %dir %{_libdir}/erlang/lib/mnesia-*/
@@ -1152,8 +1235,8 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/mnesia_frag_hash.*
 %{_mandir}/man3/mnesia_registry.*
 %endif
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %files observer
 %dir %{_libdir}/erlang/lib/observer-*/
 %{_libdir}/erlang/lib/observer-*/ebin/
@@ -1168,7 +1251,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/ttb.*
 %{_mandir}/man6/observer.*
 %endif
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %files odbc
 %{_libdir}/erlang/lib/odbc-*/
@@ -1182,15 +1265,8 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/cpu_sup.*
 %{_mandir}/man3/disksup.*
 %{_mandir}/man3/memsup.*
-%{_mandir}/man3/os_mon_mib.*
 %{_mandir}/man3/os_sup.*
 %{_mandir}/man6/os_mon.*
-%endif
-
-%files otp_mibs
-%{_libdir}/erlang/lib/otp_mibs-*/
-%if %{with doc}
-%{_mandir}/man3/otp_mib.*
 %endif
 
 %files parsetools
@@ -1206,8 +1282,8 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/public_key.*
 %{_mandir}/man6/public_key.*
 %endif
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %files reltool
 %dir %{_libdir}/erlang/lib/reltool-*/
 %{_libdir}/erlang/lib/reltool-*/ebin
@@ -1215,7 +1291,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %if %{with doc}
 %{_mandir}/man3/reltool.*
 %endif
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %files runtime_tools
 %dir %{_libdir}/erlang/lib/runtime_tools-*/
@@ -1316,6 +1392,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_libdir}/erlang/lib/ssh-*/src
 %if %{with doc}
 %{_mandir}/man3/ssh.*
+%{_mandir}/man3/ssh_agent.*
 %{_mandir}/man3/ssh_client_channel.*
 %{_mandir}/man3/ssh_client_key_api.*
 %{_mandir}/man3/ssh_connection.*
@@ -1324,7 +1401,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/ssh_server_key_api.*
 %{_mandir}/man3/ssh_sftp.*
 %{_mandir}/man3/ssh_sftpd.*
-%{_mandir}/man6/ssh.*
+%{_mandir}/man6/SSH.*
 %endif
 
 %files ssl
@@ -1396,6 +1473,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/sets.*
 %{_mandir}/man3/shell.*
 %{_mandir}/man3/shell_default.*
+%{_mandir}/man3/shell_docs.*
 %{_mandir}/man3/slave.*
 %{_mandir}/man3/sofs.*
 %{_mandir}/man3/string.*
@@ -1461,15 +1539,8 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_emacs_sitelispdir}/erlang/*.elc
 %{_emacs_sitestartdir}/erlang-init.el
 %endif %{__with_emacs}
-%if %{__with_xemacs}
-%dir %{_xemacs_sitelispdir}/erlang
-%doc %{_xemacs_sitelispdir}/erlang/README
-%{_xemacs_sitelispdir}/erlang/*.el
-%{_xemacs_sitelispdir}/erlang/*.elc
-%{_xemacs_sitestartdir}/erlang-init.el
-%endif %{__with_xemacs}
-%if %{__with_wxwidgets}
 
+%if %{__with_wxwidgets}
 %files wx
 %dir %{_libdir}/erlang/lib/wx-*/
 %{_libdir}/erlang/lib/wx-*/ebin
@@ -1710,7 +1781,7 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/wx_misc.*
 %{_mandir}/man3/wx_object.*
 %endif
-%endif %{__with_wxwidgets}
+%endif # __with_wxwidgets
 
 %files xmerl
 %{_libdir}/erlang/lib/xmerl-*/
@@ -1724,7 +1795,11 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 %{_mandir}/man3/xmerl_xsd.*
 %endif
 
+
 %changelog
+* Tue Jan 18 2022 Ge Wang <wangge20@huawei.com> - 23.3.4.9-1
+- Update to version 23.4.4.9
+
 * Mon Jan 10 2022 wangkai <wangkai385@huawei.com> - 21.3.3-4
 - fix build error for autoconf 2.71
 
@@ -1734,5 +1809,5 @@ useradd -r -g epmd -d /dev/null -s /sbin/nologin \
 * Sat Mar 27 2021 weishengjing <weishengjing1@huawei.com> - 21.3.3-2
 - Support parallel compilation
 
-* Mon Aug 24 2020 chengzihan <chengzihan2@huawei.com> - 21.3.3-1
+* Mon Aug 24 2020 chengzihan <chengzihan2huawei.com> - 21.3.3-1
 - Package init

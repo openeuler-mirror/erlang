@@ -5,10 +5,10 @@ Subject: [PATCH] Do not install Java sources
 Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
 
 diff --git a/lib/jinterface/java_src/com/ericsson/otp/erlang/Makefile b/lib/jinterface/java_src/com/ericsson/otp/erlang/Makefile
-index ee616f3d7e..fdd28e79b3 100644
+index bcbb206db6..1451378b35 100644
 --- a/lib/jinterface/java_src/com/ericsson/otp/erlang/Makefile
 +++ b/lib/jinterface/java_src/com/ericsson/otp/erlang/Makefile
-@@ -120,8 +120,6 @@ release release_docs release_tests release_html:
+@@ -123,8 +123,6 @@ release release_docs release_tests release_html:
  	$(V_at)$(MAKE) $(MFLAGS) RELEASE_PATH="$(RELEASE_PATH)" $(TARGET_MAKEFILE)  $@_spec
  
  release_spec: opt
