@@ -5,7 +5,7 @@ Subject: [PATCH] Add extra search directory
 Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
 
 diff --git a/lib/kernel/src/code_server.erl b/lib/kernel/src/code_server.erl
-index 68e1205301..0f534ff814 100644
+index 4c4823eb38..de0ab149fb 100644
 --- a/lib/kernel/src/code_server.erl
 +++ b/lib/kernel/src/code_server.erl
 @@ -79,11 +79,17 @@ init(Ref, Parent, [Root,Mode]) ->
